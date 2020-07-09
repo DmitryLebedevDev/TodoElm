@@ -18,9 +18,14 @@ subscriptions : Model -> Sub Msg
 subscriptions model = Sub.none
 
 -- MODEL
+type alias Task = {
+  --id: Int ,
+  title: String ,
+  isCompite: Bool
+  }
 type alias Model = { 
   taskTitle: String ,
-  taskList: List String
+  taskList: List Task
   } 
 init: () -> (Model, Cmd Msg)
 init _ = ({
@@ -34,14 +39,20 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     ChangeInput title -> ({model | taskTitle = title}, Cmd.none)
-    Add_Task -> ({taskList = model.taskTitle :: model.taskList ,
+    Add_Task -> ({taskList = {
+                              --id = toRataDie ,
+                              title = model.taskTitle ,
+                              isCompite = False
+                             } :: model.taskList,
                   taskTitle = "" }, Cmd.none)
 -- VIEW
 view : Model -> Html Msg
 view model = div [ style "font-family" "sans-serif" ] [
     Html.form [ onSubmit Add_Task, style "margin-bottom" "5px" ] [
         input [ onInput ChangeInput, value model.taskTitle ] [] ,
-        button[ onClick Add_Task ] [text "submit"]
+        button[ onClick Add_Task, type_ "button" ] [text "submit"]
     ] ,
-    div [] (List.map (\x -> div [] [text x]) model.taskList)
+    div [] (List.map (\x -> div [] [ 
+        input [ type_ "checkbox" ][], text x.title]
+      ) model.taskList)
   ]
