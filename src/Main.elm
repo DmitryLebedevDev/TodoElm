@@ -50,7 +50,8 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     ChangeInput title -> ({model | taskTitle = title}, Cmd.none)
-    Add_Task -> ({model | taskList = {
+    Add_Task -> if String.length model.taskTitle > 0 then
+                  ({model | taskList = {
                               id = case head model.taskList of 
                                     Just task -> task.id+1 
                                     Nothing -> 0 , 
@@ -58,6 +59,7 @@ update msg model =
                               isCompite = False
                              } :: model.taskList,
                   taskTitle = "" }, Cmd.none)
+                else (model, Cmd.none)
     ChangeTaskCompliteStatus id -> (
       {model | taskList = List.map (\task -> 
         if task.id == id 
@@ -70,19 +72,23 @@ update msg model =
       }, Cmd.none)
 -- VIEW
 view : Model -> Html Msg
-view model = div [ style "font-family" "sans-serif" ] [
+view model = div [ style "font-family" "sans-serif", style "width" "320px"] [
     Html.form [ onSubmit Add_Task, style "margin-bottom" "5px" ] [
         input [ onInput ChangeInput, value model.taskTitle ] [] ,
         button[ onClick Add_Task, type_ "button" ] [text "submit"]
     ] ,
-    div [] (List.map (\x -> div [] [
+    div [ style "height" "300px", style "overflow" "auto" ] (List.map (\x -> div [] [
         label [] [
           input [ type_ "checkbox" , 
                 checked x.isCompite ,
                 onClick <| ChangeTaskCompliteStatus x.id ][],
           text x.title
         ]]
-      )
+      ) <|  List.filter (\x -> case model.statusList of
+                                All -> True
+                                Active -> x.isCompite == False
+                                Completed -> x.isCompite == True
+                        )
     model.taskList) ,
     div [] [
       button [disabled <| model.statusList == All ,
