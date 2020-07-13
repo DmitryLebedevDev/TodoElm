@@ -72,12 +72,19 @@ update msg model =
       }, Cmd.none)
 -- VIEW
 view : Model -> Html Msg
-view model = div [ style "font-family" "sans-serif", style "width" "320px"] [
-    Html.form [ onSubmit Add_Task, style "margin-bottom" "5px" ] [
-        input [ onInput ChangeInput, value model.taskTitle ] [] ,
+view model = div [
+                   style "margin" "0px auto", 
+                   style "font-family" "sans-serif", 
+                   style "width" "320px"] [
+    Html.form [ style "display" "flex",
+                style "justify-content" "center", 
+                onSubmit Add_Task, style "margin-bottom" "5px" ] [
+        input [ style "width" "100%", onInput ChangeInput, value model.taskTitle ] [] ,
         button[ onClick Add_Task, type_ "button" ] [text "submit"]
     ] ,
-    div [ style "height" "300px", style "overflow" "auto" ] (List.map (\x -> div [] [
+    div [style "display" "flex", style "aligin-items" "center",
+         style "flex-direction" "column",
+         style "height" "300px", style "overflow" "auto" ] (List.map (\x -> div [] [
         label [] [
           input [ type_ "checkbox" , 
                 checked x.isCompite ,
@@ -90,7 +97,7 @@ view model = div [ style "font-family" "sans-serif", style "width" "320px"] [
                                 Completed -> x.isCompite == True
                         )
     model.taskList) ,
-    div [] [
+    div [style "display" "flex", style "justify-content" "center"] [
       button [disabled <| model.statusList == All ,
               onClick  <| SetStatusList All
              ] [ text "All" ] ,
