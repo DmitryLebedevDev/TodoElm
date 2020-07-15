@@ -14,6 +14,7 @@ import Date
 import Task exposing (Task)
 import List exposing (head)
 import Http exposing (task)
+import PortFunnel as LocalStorage
 
 main =
   Browser.element { init = init, update = update, view = view, subscriptions = subscriptions }
@@ -43,12 +44,14 @@ type StateList = All
                | Active
                | Completed
 type Msg = Add_Task
+         | Delete_Task Int
          | ChangeInput String
          | ChangeTaskCompliteStatus Int
          | SetStatusList StateList
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
+    Delete_Task id -> ({model | taskList = List.filter (\x -> not <| x.id == id) model.taskList}, Cmd.none)
     ChangeInput title -> ({model | taskTitle = title}, Cmd.none)
     Add_Task -> if String.length model.taskTitle > 0 then
                   ({model | taskList = {
@@ -85,11 +88,21 @@ view model = div [
     div [style "display" "flex", style "aligin-items" "center",
          style "flex-direction" "column",
          style "height" "300px", style "overflow" "auto" ] (List.map (\x -> div [] [
-        label [] [
-          input [ type_ "checkbox" , 
+        label [ style "display" "flex", 
+                style "justify-content" "space-between",
+                style "margin-top" "5px",
+                style "cursor" "pointer" 
+              ] [
+          div [] [
+            input [ 
+                style "cursor" "pointer" ,
+                style "margin-right" "10px" ,
+                type_ "checkbox" , 
                 checked x.isCompite ,
                 onClick <| ChangeTaskCompliteStatus x.id ][],
-          text x.title
+            text x.title
+          ] ,
+          button [ onClick <| Delete_Task x.id ] [ text "delete" ]
         ]]
       ) <|  List.filter (\x -> case model.statusList of
                                 All -> True
