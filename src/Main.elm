@@ -14,13 +14,17 @@ import Date
 import Task exposing (Task)
 import List exposing (head)
 import Http exposing (task)
+import Time exposing (..)
 import PortFunnel as LocalStorage
 
 main =
   Browser.element { init = init, update = update, view = view, subscriptions = subscriptions }
 
+type alias Time =
+    Float
 subscriptions : Model -> Sub Msg
-subscriptions model = Sub.none
+subscriptions model =
+  Time.every 1000 Tick
 
 -- MODEL
 type alias Task = {
@@ -31,13 +35,17 @@ type alias Task = {
 type alias Model = { 
   taskTitle: String ,
   taskList: List Task ,
-  statusList: StateList
-  } 
+  statusList: StateList ,
+  time: Time.Posix ,
+  timeZone: Time.Zone
+  }
 init: () -> (Model, Cmd Msg)
 init _ = ({
     taskTitle = "",
     taskList = [],
-    statusList = All
+    statusList = All,
+    time = Time.millisToPosix 0,
+    timeZone = Time.utc
   }, Cmd.none)
 -- UPDATE
 type StateList = All
@@ -48,6 +56,7 @@ type Msg = Add_Task
          | ChangeInput String
          | ChangeTaskCompliteStatus Int
          | SetStatusList StateList
+         | Tick Time.Posix
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
@@ -73,17 +82,25 @@ update msg model =
     SetStatusList status -> ({
       model | statusList = status
       }, Cmd.none)
+    Tick posix -> ( {model | time = posix}, Cmd.none)
 -- VIEW
 view : Model -> Html Msg
 view model = div [
                    style "margin" "0px auto", 
                    style "font-family" "sans-serif", 
                    style "width" "320px"] [
+    div [] [
+      text <| String.fromInt <| Time.toHour model.timeZone model.time ,
+      text ":" ,
+      text <| String.fromInt <| Time.toMinute model.timeZone model.time ,
+      text ":" ,
+      text <| String.fromInt <| 1 + Time.toSecond model.timeZone model.time
+    ] ,
     Html.form [ style "display" "flex",
                 style "justify-content" "center", 
                 onSubmit Add_Task, style "margin-bottom" "5px" ] [
         input [ style "width" "100%", onInput ChangeInput, value model.taskTitle ] [] ,
-        button[ onClick Add_Task, type_ "button" ] [text "submit"]
+        button[ style "margin-left" "5px", onClick Add_Task, type_ "button" ] [text "submit"]
     ] ,
     div [style "display" "flex", style "aligin-items" "center",
          style "flex-direction" "column",
