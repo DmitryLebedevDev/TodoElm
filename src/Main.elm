@@ -46,7 +46,7 @@ init _ = ({
     statusList = All,
     time = Time.millisToPosix 0,
     timeZone = Time.utc
-  }, Cmd.none)
+  }, Task.perform SetTimeZone Time.here)
 -- UPDATE
 type StateList = All
                | Active
@@ -57,6 +57,7 @@ type Msg = Add_Task
          | ChangeTaskCompliteStatus Int
          | SetStatusList StateList
          | Tick Time.Posix
+         | SetTimeZone Time.Zone
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
@@ -83,13 +84,14 @@ update msg model =
       model | statusList = status
       }, Cmd.none)
     Tick posix -> ( {model | time = posix}, Cmd.none)
+    SetTimeZone zone -> ( { model | timeZone = zone }, Cmd.none)
 -- VIEW
 view : Model -> Html Msg
 view model = div [
                    style "margin" "0px auto", 
                    style "font-family" "sans-serif", 
                    style "width" "320px"] [
-    div [] [
+    div [style "text-align" "center", style "margin-bottom" "5px" ] [
       text <| String.fromInt <| Time.toHour model.timeZone model.time ,
       text ":" ,
       text <| String.fromInt <| Time.toMinute model.timeZone model.time ,
