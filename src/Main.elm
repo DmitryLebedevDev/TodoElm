@@ -84,7 +84,7 @@ update msg model =
       model | statusList = status
       }, Cmd.none)
     Tick posix -> ( {model | time = posix}, Cmd.none)
-    SetTimeZone zone -> ( { model | timeZone = zone }, Cmd.none)
+    SetTimeZone zone -> ( { model | timeZone = zone }, Task.perform Tick Time.now)
 -- VIEW
 view : Model -> Html Msg
 view model = div [
