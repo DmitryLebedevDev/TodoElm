@@ -20,6 +20,28 @@ import PortFunnel as LocalStorage
 main =
   Browser.element { init = init, update = update, view = view, subscriptions = subscriptions }
 
+monthToNumbers : Month -> String
+monthToNumbers month = 
+  case month of 
+    Jan -> "01"
+    Feb -> "02"
+    Mar -> "03"
+    Apr -> "04"
+    May -> "05"
+    Jun -> "06"
+    Jul -> "07"
+    Aug -> "08"
+    Sep -> "09"
+    Oct -> "10"
+    Nov -> "11"
+    Dec -> "12"
+formtNumToDataNumber : Int -> String
+formtNumToDataNumber num = 
+  if num < 10 then
+    "0" ++ (String.fromInt num)
+  else
+    String.fromInt num
+
 type alias Time =
     Float
 subscriptions : Model -> Sub Msg
@@ -91,12 +113,19 @@ view model = div [
                    style "margin" "0px auto", 
                    style "font-family" "sans-serif", 
                    style "width" "320px"] [
-    div [style "text-align" "center", style "margin-bottom" "5px" ] [
-      text <| String.fromInt <| Time.toHour model.timeZone model.time ,
+    div [ style "text-align" "center" ] [
+      text <| formtNumToDataNumber <| Time.toDay model.timeZone model.time ,
+      text "." ,
+      text <| monthToNumbers <| Time.toMonth model.timeZone model.time ,
+      text "." ,
+      text <| formtNumToDataNumber <| Time.toYear model.timeZone model.time
+    ] ,
+    div [ style "text-align" "center", style "margin-bottom" "5px" ] [
+      text <| formtNumToDataNumber <| Time.toHour model.timeZone model.time ,
       text ":" ,
-      text <| String.fromInt <| Time.toMinute model.timeZone model.time ,
+      text <| formtNumToDataNumber <| Time.toMinute model.timeZone model.time ,
       text ":" ,
-      text <| String.fromInt <| 1 + Time.toSecond model.timeZone model.time
+      text <| formtNumToDataNumber <| Time.toSecond model.timeZone model.time
     ] ,
     Html.form [ style "display" "flex",
                 style "justify-content" "center", 
