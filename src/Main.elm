@@ -41,7 +41,17 @@ formtNumToDataNumber num =
     "0" ++ (String.fromInt num)
   else
     String.fromInt num
-
+timeToString : Time.Zone -> Time.Posix -> String
+timeToString zone posix = 
+  (formtNumToDataNumber <| Time.toHour zone posix)
+  ++
+  ":"
+  ++
+  (formtNumToDataNumber <| Time.toMinute zone posix)
+  ++
+  ":"
+  ++
+  (formtNumToDataNumber <| Time.toSecond zone posix)
 type alias Time =
     Float
 subscriptions : Model -> Sub Msg
@@ -52,7 +62,8 @@ subscriptions model =
 type alias Task = {
   id: Int,
   title: String ,
-  isCompite: Bool
+  isCompite: Bool ,
+  timeStart: Time.Posix
   }
 type alias Model = { 
   taskTitle: String ,
@@ -91,7 +102,8 @@ update msg model =
                                     Just task -> task.id+1 
                                     Nothing -> 0 , 
                               title = model.taskTitle ,
-                              isCompite = False
+                              isCompite = False ,
+                              timeStart = model.time
                              } :: model.taskList,
                   taskTitle = "" }, Cmd.none)
                 else (model, Cmd.none)
@@ -121,11 +133,7 @@ view model = div [
       text <| formtNumToDataNumber <| Time.toYear model.timeZone model.time
     ] ,
     div [ style "text-align" "center", style "margin-bottom" "5px" ] [
-      text <| formtNumToDataNumber <| Time.toHour model.timeZone model.time ,
-      text ":" ,
-      text <| formtNumToDataNumber <| Time.toMinute model.timeZone model.time ,
-      text ":" ,
-      text <| formtNumToDataNumber <| Time.toSecond model.timeZone model.time
+      text <| timeToString model.timeZone model.time
     ] ,
     Html.form [ style "display" "flex",
                 style "justify-content" "center", 
@@ -150,6 +158,7 @@ view model = div [
                 onClick <| ChangeTaskCompliteStatus x.id ][],
             text x.title
           ] ,
+          --text <| timeToString model.timeZone x.timeStart ,
           button [ onClick <| Delete_Task x.id ] [ text "delete" ]
         ]]
       ) <|  List.filter (\x -> case model.statusList of
