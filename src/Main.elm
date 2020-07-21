@@ -147,7 +147,8 @@ view model = div [
         label [ style "display" "flex", 
                 style "justify-content" "space-between",
                 style "margin-top" "5px",
-                style "cursor" "pointer" 
+                style "cursor" "pointer",
+                style "&::selection" "transparent"
               ] [
           div [] [
             input [ 
@@ -158,8 +159,18 @@ view model = div [
                 onClick <| ChangeTaskCompliteStatus x.id ][],
             text x.title
           ] ,
-          --text <| timeToString model.timeZone x.timeStart ,
-          button [ onClick <| Delete_Task x.id ] [ text "delete" ]
+          div [ style "display" "flex"] [
+            div [style "margin-top" "3px" ,
+                 style "font-size" "13px" ,
+                 style "margin-right" "5px",
+                 style "&::selection" "transparent"
+                ] 
+              [
+              text <| timeToString model.timeZone x.timeStart
+              ] ,
+            button [ onClick <| Delete_Task x.id ] [ text "delete" ]
+          ]
+          
         ]]
       ) <|  List.filter (\x -> case model.statusList of
                                 All -> True
