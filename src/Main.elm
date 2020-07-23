@@ -143,7 +143,8 @@ view model = div [
     ] ,
     div [style "display" "flex", style "aligin-items" "center",
          style "flex-direction" "column",
-         style "height" "300px", style "overflow" "auto" ] (List.map (\x -> div [] [
+         style "height" "300px", style "overflow" "auto", style "margin" "10px 0px" ] 
+        (List.map (\x -> div [] [
         label [ style "display" "flex", 
                 style "justify-content" "space-between",
                 style "margin-top" "5px",
