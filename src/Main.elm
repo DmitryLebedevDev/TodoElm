@@ -132,7 +132,7 @@ view model = div [
       text "." ,
       text <| formtNumToDataNumber <| Time.toYear model.timeZone model.time
     ] ,
-    div [ style "text-align" "center", style "margin-bottom" "5px" ] [
+    div [ style "text-align" "center", style "margin-bottom" "8px" ] [
       text <| timeToString model.timeZone model.time
     ] ,
     Html.form [ style "display" "flex",
@@ -162,7 +162,7 @@ view model = div [
           div [ style "display" "flex"] [
             div [style "margin-top" "3px" ,
                  style "font-size" "13px" ,
-                 style "margin-right" "5px",
+                 style "margin-right" "8px",
                  style "&::selection" "transparent"
                 ] 
               [
